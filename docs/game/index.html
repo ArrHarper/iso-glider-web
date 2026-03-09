@@ -16,10 +16,18 @@ body {
 	background-color: black;
 	overflow: hidden;
 	touch-action: none;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 100vh;
 }
 
 #canvas {
 	display: block;
+	width: 1280px;
+	max-width: 100vw;
+	max-height: 100vh;
+	aspect-ratio: 16 / 9;
 }
 
 #canvas:focus {
@@ -93,9 +101,11 @@ body {
 		<link id="-gd-engine-icon" rel="icon" type="image/png" href="index.icon.png" />
 <link rel="apple-touch-icon" href="index.apple-touch-icon.png"/>
 
+		<link id="-gd-engine-icon" rel="icon" type="image/png" href="index.js.icon.png" />
+		<link rel="apple-touch-icon" href="index.js.apple-touch-icon.png"/>
 	</head>
 	<body>
-		<canvas id="canvas">
+		<canvas id="canvas" width="1920" height="1080">
 			Your browser does not support the canvas tag.
 		</canvas>
 
@@ -104,12 +114,12 @@ body {
 		</noscript>
 
 		<div id="status">
-			<img id="status-splash" class="show-image--true fullsize--true use-filter--true" src="index.png" alt="">
+			<img id="status-splash" class="show-image--true fullsize--true use-filter--true" src="index.js.png" alt="">
 			<progress id="status-progress"></progress>
 			<div id="status-notice"></div>
 		</div>
 
-		<script src="index.js"></script>
+		<script src="index.js.js"></script>
 		<script>
 const GODOT_CONFIG = {"args":[],"canvasResizePolicy":1,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":9043440,"index.wasm":38057390},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4};
 const GODOT_THREADS_ENABLED = false;
@@ -174,7 +184,6 @@ const engine = new Engine(GODOT_CONFIG);
 			} catch (err) {
 				serviceWorkerRegistrationPromise = Promise.reject(new Error('Service worker registration failed.'));
 			}
-			// There's a chance that installing the service worker would fix the issue
 			Promise.race([
 				serviceWorkerRegistrationPromise.then((registration) => {
 					if (registration != null) {
@@ -182,18 +191,15 @@ const engine = new Engine(GODOT_CONFIG);
 					}
 					return registration;
 				}).then(() => engine.installServiceWorker()),
-				// For some reason, `getRegistration()` can stall
 				new Promise((resolve) => {
 					setTimeout(() => resolve(), 2000);
 				}),
 			]).then(() => {
-				// Reload if there was no error.
 				window.location.reload();
 			}).catch((err) => {
 				console.error('Error while registering service worker:', err);
 			});
 		} else {
-			// Display the message as usual
 			const missingMsg = 'Error\nThe following features required to run Godot projects on the Web are missing:\n';
 			displayFailureNotice(missingMsg + missing.join('\n'));
 		}
